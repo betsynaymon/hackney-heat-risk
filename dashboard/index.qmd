@@ -1,0 +1,88 @@
+---
+title: "Heat risk in Hackney"
+format: dashboard
+---
+
+# Overview
+
+Headline finding. 
+
+# Who is at risk?
+
+## Row {height="80%"}
+
+::: {.card title="How Hackney compares with London and England"}
+Spine chart here
+:::
+
+### Column {.tabset width="50%"}
+
+::: {.card title="Heart and lungs"}
+Funnel plot for one headline indicator goes here.
+:::
+
+::: {.card title="Dementia and mental health"}
+Funnel plot for one headline indicator goes here.
+:::
+
+::: {.card title="Diabetes"}
+Funnel plot for diabetes prevalence goes here.
+:::
+
+::: {.card title="Isolation"}
+Funnel plot for social isolation goes here.
+:::
+
+## Row {height="20%"}
+
+::: {.card title="Reading this page"}
+Sentences interpreting intervals and funnel charts
+:::
+
+# Where is it hottest?
+
+## Row
+
+### Column {width="60%"}
+
+::: {.card title="Surface temperature and tree cover by neighbourhood"}
+Interactive LSOA map goes here, with surface temperature and tree cover as layers you switch between.
+
+Satellites measure how hot surfaces get, not the air people feel. Tree cover data are from 2013.
+:::
+
+### Column {width="40%"}
+
+::: {.card title="Are the hottest neighbourhoods the most deprived?"}
+Scatter of temperature against deprivation goes here.
+:::
+
+::: {.card title="Hot days per year since 1960"}
+Line chart of days above 25°C goes here.
+:::
+
+# Where do they overlap?
+## Row {height="65%"}
+
+### Column {width="70%"}
+
+::: {.card title="Where heat and at-risk residents overlap"}
+Interactive bivariate map goes here, with care homes and cool spaces as points you can switch on and off.
+
+This shows where hot neighbourhoods and at-risk residents coincide, not which residents are actually exposed.
+:::
+
+### Column {width="30%"}
+
+::: {.card title="How to read the map"}
+3×3 bivariate legend goes here, plus one sentence on what the darkest corner means.
+:::
+
+## Row {height="35%"}
+
+::: {.card title="Hot neighbourhoods with many at-risk residents"}
+Priority list goes here: neighbourhood, heat level, at-risk level, distance to nearest cool space.
+:::
+
+# Data and methods
+
