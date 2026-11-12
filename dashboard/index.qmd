@@ -9,6 +9,9 @@ library(tidyverse)
 
 who_latest  <- read_rds(here::here("data", "who_latest.rds"))
 hackney_col <- "#C8553D"
+who_trend   <- read_rds(here::here("data", "who_trend.rds"))
+who_trend_gaps <- read_rds(here::here("data", "who_trend_gaps.rds"))
+dementia_dx <- read_rds(here::here("data", "dementia_dx_london.rds"))
 ```
 
 # Overview
@@ -51,9 +54,9 @@ X of Y
 "Higher", "similar" and "lower" are Fingertips' comparisons with England. Only the dementia diagnosis rate and social contact are rated "better" or "worse". GP-recorded prevalence is crude.
 :::
 
-# Who is at risk
+# Who is at risk {scrolling="true"}
 
-## Row {height="80%"}
+## Row
 
 ### Column {.tabset width="60%"}
 
@@ -61,8 +64,8 @@ X of Y
 
 ```{r}
 #| label: who-latest
-#| fig-width: 7
-#| fig-height: 8.5
+#| fig-width: 7.5
+#| fig-height: 6
 ggplot(who_latest, aes(x = value, y = fct_rev(area), colour = area)) +
   geom_linerange(aes(xmin = lower_ci, xmax = upper_ci), na.rm = TRUE) +
   geom_point(size = 2.5) +
@@ -80,7 +83,8 @@ ggplot(who_latest, aes(x = value, y = fct_rev(area), colour = area)) +
   theme_minimal(base_size = 13) +
   theme(
     panel.grid.minor = element_blank(),
-    panel.spacing    = unit(1.2, "lines")
+    panel.spacing    = unit(1.2, "lines"),
+    plot.margin = margin(5, 15, 5, 5)
   )
 ```
 
@@ -91,21 +95,101 @@ Social contact is from 2019/20, the latest year with a Hackney value.
 :::
 
 ::: {.card title="Over time"}
-Trend panels go here: the same indicators as lines for Hackney, London and England, broken where a register definition changed.
+```{r}
+#| label: who-trend
+#| fig-width: 7.5
+#| fig-height: 6
+who_trend |>
+  # Reverse so England and London are drawn first and Hackney sits on top
+  mutate(area = fct_rev(area)) |>
+  arrange(area) |>
+  ggplot(aes(x = year, y = value, colour = area,
+             group = interaction(series, area))) +
+  geom_segment(
+    data = who_trend_gaps,
+    aes(x = year, xend = next_year, y = value, yend = next_value,
+        linetype = "Year with no value"),
+    inherit.aes = FALSE, colour = "black", linewidth = 0.4
+  ) +
+  geom_line(linewidth = 0.7, na.rm = TRUE) +
+  geom_point(size = 1.2, na.rm = TRUE) +
+  facet_wrap(~ short_label, scales = "free_y", ncol = 3,
+             labeller = label_wrap_gen(width = 24)) +
+  expand_limits(y = 0) +
+  scale_x_continuous(breaks = scales::breaks_width(5)) +
+  scale_y_continuous(
+    n.breaks = 3,
+    labels = scales::label_number(suffix = "%", drop0trailing = TRUE),
+    expand = expansion(mult = c(0.05, 0.12))
+  ) +
+  scale_colour_manual(
+    values = c(Hackney = hackney_col, London = "grey45", England = "grey75"),
+    breaks = c("Hackney", "London", "England")   # legend order
+  ) +
+  scale_linetype_manual(values = c("Year with no value" = "dashed"), name = NULL) +
+  guides(linetype = guide_legend(position = "inside")) +
+  labs(x = NULL, y = NULL, colour = NULL) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position        = "top",
+    legend.position.inside = c(0.75, 0.13),
+    panel.grid.minor       = element_blank(),
+    panel.spacing          = unit(1.2, "lines")
+  )
+```
 
-Age has no trend because it comes from a single census.
+Recorded depression rises partly because the register counts adults diagnosed since April 2006, so the window keeps lengthening. NHS Digital warns that 2020/21 GP figures may be inaccurate.
+
+Age has no trend because it comes from a single census. Dashed lines join the years either side of a missing value. Social contact has none for 2020/21, when the survey was voluntary because of COVID; depression has none for 2023/24 in the source data.
 :::
 
 ### Column {width="40%"}
 
-::: {.card title="Dementia diagnosis rate"}
-Dot chart goes here: every London borough sorted by value, Hackney highlighted and named, London average line and shaded typical range.
+::: {.card title="Is Hackney’s dementia diagnosis rate unusual for London?"}
+
+```{r}
+#| label: dementia-dx
+#| fig-width: 5
+#| fig-height: 6
+dx_band    <- filter(dementia_dx$band, level == "95")
+dx_hackney <- filter(dementia_dx$points, is_hackney)
+dx_extremes <- filter(dementia_dx$points, value %in% range(value))
+
+ggplot(dementia_dx$points,
+       aes(x = value, y = fct_reorder(area_name, value))) +
+  annotate("rect", xmin = dx_band$lower, xmax = dx_band$upper,
+           ymin = -Inf, ymax = Inf, fill = "grey92") +
+  geom_vline(xintercept = dementia_dx$london_avg, colour = "grey50") +
+  geom_point(aes(colour = is_hackney), size = 2.5) +
+  geom_text(data = dx_hackney, aes(label = area_name),
+            colour = hackney_col, hjust = 1, nudge_x = -3.5, size = 4) +
+  geom_text(data = dx_extremes, aes(label = area_name),
+            colour = "grey30", hjust = 1, nudge_x = -2, size = 3.5) +
+  expand_limits(x = 0) +
+  scale_x_continuous(
+    labels = scales::label_number(suffix = "%"),
+    expand = expansion(mult = c(0.05, 0.05))
+  ) +
+  scale_colour_manual(values = c(`TRUE` = hackney_col, `FALSE` = "grey60"),
+                      guide = "none") +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.text.y        = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor   = element_blank()
+  )
+```
+
+Each dot is a London borough; the line is the London average and the shaded band is the range boroughs typically fall within, not a confidence interval. The rate is diagnosed patients aged 65+ as a share of the estimated number living with dementia, so higher is better. The lowest, the City of London, has an estimated 89 people with dementia, so its rate is far less certain than other boroughs’.
+
+
 :::
 
 ## Row {height="20%"}
 
 ::: {.card title="Reading this page"}
-Two sentences go here: what the intervals mean, and that the funnels compare Hackney with every other London borough.
+The lines through the dots on the Latest tab are 95% intervals, the range of underlying rates consistent with each figure; most are hidden behind the dots because chance makes little difference in populations this large. The shaded band on the diagnosis rate chart is the range London boroughs typically fall within, so a borough outside it differs more than boroughs usually do.
 :::
 
 # Where it's hot

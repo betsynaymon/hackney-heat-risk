@@ -70,7 +70,7 @@ ul.task-list li input[type="checkbox"] {
         
       </div>
     </div>
-<div id="dashboard-collapse" class="navbar-collapse collapse"><ul class="navbar-nav navbar-nav-scroll me-auto" role="tablist"><li class="nav-item" role="presentation"><a id="tab-overview" class="nav-link active" data-bs-toggle="tab" role="tab" data-bs-target="#overview" data-scrolling="false" href="#overview" aria-controls="overview" aria-selected="true"><span class="nav-link-text">Overview</span></a></li><li class="nav-item" role="presentation"><a id="tab-who-is-at-risk" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#who-is-at-risk" data-scrolling="false" href="#who-is-at-risk" aria-controls="who-is-at-risk" aria-selected="false"><span class="nav-link-text">Who is at risk</span></a></li><li class="nav-item" role="presentation"><a id="tab-where-its-hot" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#where-its-hot" data-scrolling="false" href="#where-its-hot" aria-controls="where-its-hot" aria-selected="false"><span class="nav-link-text">Where it’s hot</span></a></li><li class="nav-item" role="presentation"><a id="tab-where-they-overlap" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#where-they-overlap" data-scrolling="false" href="#where-they-overlap" aria-controls="where-they-overlap" aria-selected="false"><span class="nav-link-text">Where they overlap</span></a></li><li class="nav-item" role="presentation"><a id="tab-data-and-methods" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#data-and-methods" data-scrolling="false" href="#data-and-methods" aria-controls="data-and-methods" aria-selected="false"><span class="nav-link-text">Data and methods</span></a></li></ul></div></div>
+<div id="dashboard-collapse" class="navbar-collapse collapse"><ul class="navbar-nav navbar-nav-scroll me-auto" role="tablist"><li class="nav-item" role="presentation"><a id="tab-overview" class="nav-link active" data-bs-toggle="tab" role="tab" data-bs-target="#overview" data-scrolling="false" href="#overview" aria-controls="overview" aria-selected="true"><span class="nav-link-text">Overview</span></a></li><li class="nav-item" role="presentation"><a id="tab-who-is-at-risk" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#who-is-at-risk" data-scrolling="true" href="#who-is-at-risk" aria-controls="who-is-at-risk" aria-selected="false"><span class="nav-link-text">Who is at risk</span></a></li><li class="nav-item" role="presentation"><a id="tab-where-its-hot" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#where-its-hot" data-scrolling="false" href="#where-its-hot" aria-controls="where-its-hot" aria-selected="false"><span class="nav-link-text">Where it’s hot</span></a></li><li class="nav-item" role="presentation"><a id="tab-where-they-overlap" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#where-they-overlap" data-scrolling="false" href="#where-they-overlap" aria-controls="where-they-overlap" aria-selected="false"><span class="nav-link-text">Where they overlap</span></a></li><li class="nav-item" role="presentation"><a id="tab-data-and-methods" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#data-and-methods" data-scrolling="false" href="#data-and-methods" aria-controls="data-and-methods" aria-selected="false"><span class="nav-link-text">Data and methods</span></a></li></ul></div></div>
 </nav>
 </header>
 <div class="page-layout-custom quarto-dashboard-content bslib-gap-spacing html-fill-container bslib-page-fill quarto-dashboard-pages">  
@@ -202,7 +202,7 @@ How does Hackney compare on each risk factor?
 </div>
 </div>
 </div>
-<div id="who-is-at-risk" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-who-is-at-risk">
+<div id="who-is-at-risk" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" data-scrolling="true" aria-labelledby="tab-who-is-at-risk">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 80fr) minmax(3em, 20fr); grid-auto-columns: minmax(0, 1fr);">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 60fr) minmax(3em, 40fr);
 grid-auto-rows: minmax(0, 1fr);">
@@ -219,20 +219,28 @@ grid-auto-rows: minmax(0, 1fr);">
 <p>Panels named after a condition show the share of GP-registered patients with that diagnosis. These rates are crude (not age-standardised), so Hackney’s young population lowers them.</p>
 <p>Social contact is from 2019/20, the latest year with a Hackney value.</p>
 </div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-6-2"><div class="card-body html-fill-item html-fill-container" data-title="Over time">
-<p>Trend panels go here: the same indicators as lines for Hackney, London and England, broken where a register definition changed.</p>
-<p>Age has no trend because it comes from a single census.</p>
+<div class="cell-output-display html-fill-item html-fill-container">
+<img src="index_files/figure-html/who-trend-1.png" class="img-fluid quarto-dashboard-img-contain">
+</div>
+<p>Recorded depression rises partly because the register counts adults diagnosed since April 2006, so the window keeps lengthening. NHS Digital warns that 2020/21 GP figures may be inaccurate.</p>
+<p>Age has no trend because it comes from a single census. Dashed lines join the years either side of a missing value. Social contact has none for 2020/21, when the survey was voluntary because of COVID; depression has none for 2023/24 in the source data.</p>
 </div></div></div><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
     <span class="bslib-full-screen-enter badge rounded-pill">
         <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
     </span>
 </bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
-<div class="card html-fill-item html-fill-container bslib-card" data-title="Dementia diagnosis rate" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card html-fill-item html-fill-container bslib-card" data-title="Is Hackney’s dementia diagnosis rate unusual for London?" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-header"><div class="card-title"><span style="display: inline">
-Dementia diagnosis rate
+Is Hackney’s dementia diagnosis rate unusual for London?
 </span></div></div>
+<div class="cell card-body html-fill-item html-fill-container">
+<div class="cell-output-display html-fill-item html-fill-container">
+<img src="index_files/figure-html/dementia-dx-1.png" class="img-fluid quarto-dashboard-img-contain">
+</div>
+</div>
 <div class="card-body html-fill-item html-fill-container">
-<p>Dot chart goes here: every London borough sorted by value, Hackney highlighted and named, London average line and shaded typical range.</p>
+<p>Each dot is a London borough; the line is the London average and the shaded band is the range boroughs typically fall within, not a confidence interval. The rate is diagnosed patients aged 65+ as a share of the estimated number living with dementia, so higher is better. The lowest, the City of London, has an estimated 89 people with dementia, so its rate is far less certain than other boroughs’.</p>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
@@ -249,7 +257,7 @@ grid-auto-rows: minmax(0, 1fr);">
 Reading this page
 </span></div></div>
 <div class="card-body html-fill-item html-fill-container">
-<p>Two sentences go here: what the intervals mean, and that the funnels compare Hackney with every other London borough.</p>
+<p>The lines through the dots on the Latest tab are 95% intervals, the range of underlying rates consistent with each figure; most are hidden behind the dots because chance makes little difference in populations this large. The shaded band on the diagnosis rate chart is the range London boroughs typically fall within, so a borough outside it differs more than boroughs usually do.</p>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>

@@ -126,6 +126,21 @@ trend |>
 
 write_rds(trend, "data/who_trend.rds")
 
+# Bridges across missing years, drawn dashed in the "Over time" panels
+trend_gaps <- trend |>
+  filter(!is.na(value)) |>
+  group_by(IndicatorID, area) |>
+  arrange(year, .by_group = TRUE) |>
+  mutate(next_year = lead(year), next_value = lead(value)) |>
+  filter(next_year - year > 1) |>
+  ungroup() |>
+  select(short_label, area, year, value, next_year, next_value)
+
+# Check: expect depression (all three areas) and social contact (London, England)
+trend_gaps |> count(short_label, area)
+
+write_rds(trend_gaps, "data/who_trend_gaps.rds")
+
 # ---- 4. Funnel: dementia diagnosis rate, London boroughs ----
 # Spiegelhalter (2005) overdispersion check and additive random-effects
 # adjustment. p_obs and p0 are proportions (0-1), n is the denominator.
