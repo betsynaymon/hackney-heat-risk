@@ -2,50 +2,119 @@
 title: "Heat risk in Hackney"
 format: dashboard
 ---
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+
+who_latest  <- read_rds(here::here("data", "who_latest.rds"))
+hackney_col <- "#C8553D"
+```
 
 # Overview
 
-Headline finding. 
+## Row {height="20%"}
 
-# Who is at risk?
+::: {.card title="Who in Hackney is most at risk in a heatwave?"}
+One-sentence finding goes here, written last.
+:::
+
+## Row {height="20%"}
+
+::: {.valuebox icon="people" color="light"}
+Residents aged 75+
+
+–
+:::
+
+::: {.valuebox icon="house" color="light"}
+People aged 66+ living alone
+
+–
+:::
+
+::: {.valuebox icon="thermometer-sun" color="light"}
+Hot neighbourhoods with many residents aged 75+
+
+X of Y
+:::
+
+## Row {height="60%"}
+
+::: {.card title="How does Hackney compare on each risk factor?"}
+
+| Indicator | Period | Hackney | England | Compared with England | Recent trend |
+|---|---|---|---|---|---|
+| Dementia diagnosis rate | – | – | – | – | – |
+| Depression | – | – | – | – | – |
+
+"Higher", "similar" and "lower" are Fingertips' comparisons with England. Only the dementia diagnosis rate and social contact are rated "better" or "worse". GP-recorded prevalence is crude.
+:::
+
+# Who is at risk
 
 ## Row {height="80%"}
 
-::: {.card title="How Hackney compares with London and England"}
-Spine chart here
+### Column {.tabset width="60%"}
+
+::: {.card title="Latest"}
+
+```{r}
+#| label: who-latest
+#| fig-width: 7
+#| fig-height: 8.5
+ggplot(who_latest, aes(x = value, y = fct_rev(area), colour = area)) +
+  geom_linerange(aes(xmin = lower_ci, xmax = upper_ci), na.rm = TRUE) +
+  geom_point(size = 2.5) +
+  facet_wrap(~ short_label, scales = "free_x", ncol = 3,
+             labeller = label_wrap_gen(width = 24)) +  expand_limits(x = 0) +
+  scale_x_continuous(
+    n.breaks = 3,
+    labels = scales::label_number(suffix = "%", drop0trailing = TRUE),
+    expand = expansion(mult = c(0.05, 0.12))
+  ) +  scale_colour_manual(
+    values = c(Hackney = hackney_col, London = "grey60", England = "grey60"),
+    guide = "none"
+  ) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.spacing    = unit(1.2, "lines")
+  )
+```
+
+Panels named after a condition show the share of GP-registered patients with that diagnosis. These rates are crude (not age-standardised), so Hackney's young population lowers them.
+
+Social contact is from 2019/20, the latest year with a Hackney value.
+
 :::
 
-### Column {.tabset width="50%"}
+::: {.card title="Over time"}
+Trend panels go here: the same indicators as lines for Hackney, London and England, broken where a register definition changed.
 
-::: {.card title="Heart and lungs"}
-Funnel plot for one headline indicator goes here.
+Age has no trend because it comes from a single census.
 :::
 
-::: {.card title="Dementia and mental health"}
-Funnel plot for one headline indicator goes here.
-:::
+### Column {width="40%"}
 
-::: {.card title="Diabetes"}
-Funnel plot for diabetes prevalence goes here.
-:::
-
-::: {.card title="Isolation"}
-Funnel plot for social isolation goes here.
+::: {.card title="Dementia diagnosis rate"}
+Dot chart goes here: every London borough sorted by value, Hackney highlighted and named, London average line and shaded typical range.
 :::
 
 ## Row {height="20%"}
 
 ::: {.card title="Reading this page"}
-Sentences interpreting intervals and funnel charts
+Two sentences go here: what the intervals mean, and that the funnels compare Hackney with every other London borough.
 :::
 
-# Where is it hottest?
+# Where it's hot
 
-## Row
+## Row {height="75%"}
 
 ### Column {width="60%"}
 
-::: {.card title="Surface temperature and tree cover by neighbourhood"}
+::: {.card title="Which neighbourhoods get hottest?"}
 Interactive LSOA map goes here, with surface temperature and tree cover as layers you switch between.
 
 Satellites measure how hot surfaces get, not the air people feel. Tree cover data are from 2013.
@@ -54,35 +123,87 @@ Satellites measure how hot surfaces get, not the air people feel. Tree cover dat
 ### Column {width="40%"}
 
 ::: {.card title="Are the hottest neighbourhoods the most deprived?"}
-Scatter of temperature against deprivation goes here.
+Scatter of surface temperature against IoD 2025 score goes here, one point per LSOA.
 :::
 
-::: {.card title="Hot days per year since 1960"}
-Line chart of days above 25°C goes here.
+## Row {height="25%"}
+
+::: {.card title="Is Hackney getting more hot days?"}
+Line chart of days above 25°C per year since 1960 goes here, averaged over the HadUK-Grid cells covering Hackney.
 :::
 
-# Where do they overlap?
-## Row {height="65%"}
+# Where they overlap
+
+## Row
 
 ### Column {width="70%"}
 
-::: {.card title="Where heat and at-risk residents overlap"}
-Interactive bivariate map goes here, with care homes and cool spaces as points you can switch on and off.
+::: {.card title="Where do hot neighbourhoods and older residents coincide?"}
+Interactive bivariate map goes here: surface temperature against share aged 75+, with care homes and cool spaces as points you can switch on and off.
 
-This shows where hot neighbourhoods and at-risk residents coincide, not which residents are actually exposed.
+This shows where hot neighbourhoods and older residents coincide, not which residents are actually exposed.
 :::
 
 ### Column {width="30%"}
 
 ::: {.card title="How to read the map"}
-3×3 bivariate legend goes here, plus one sentence on what the darkest corner means.
-:::
+3×3 bivariate legend goes here.
 
-## Row {height="35%"}
-
-::: {.card title="Hot neighbourhoods with many at-risk residents"}
-Priority list goes here: neighbourhood, heat level, at-risk level, distance to nearest cool space.
+One sentence on what the darkest corner means, and that "hot" and "older" are relative to the rest of Hackney.
 :::
 
 # Data and methods
+
+## Row {.tabset height="85%"}
+
+::: {.card title="Sources"}
+
+| Source | What it gives | Period | Geography | Licence |
+|---|---|---|---|---|
+| OHID Fingertips | GP-recorded prevalence, dementia diagnosis rate, social contact | Varies by indicator | Borough | Open Government Licence |
+| Census 2021 (Nomis) | Age, older people living alone | 2021 | LSOA | Open Government Licence |
+
+Remaining rows from the plan's data sources table go here.
+:::
+
+::: {.card title="Methods"}
+**Confidence intervals.** What the 95% interval means, in two or three sentences.
+
+**Funnel plots and overdispersion.** How the limits are drawn, why they're widened, and why only two indicators get a funnel.
+
+**Crude rates.** Why GP prevalence isn't age-standardised, and what that means in a young borough.
+
+**Surface temperature.** Which Landsat summer was used, how it's averaged to LSOAs, and that it measures surfaces rather than air.
+
+**Bivariate bands.** How the three bands are drawn across Hackney's LSOAs.
+
+**Change of data source.** Fingertips is being replaced by Find public health data; which one this dashboard uses.
+:::
+
+::: {.card title="Limitations"}
+**Who is at risk**
+
+- **Crude rates.** One sentence.
+- **GP registers count diagnoses.** One sentence.
+- **Evidence comes from elsewhere.** One sentence.
+
+**Where it's hot and where they overlap**
+
+- **Surface, not air, temperature.** One sentence.
+- **Old tree cover data.** One sentence.
+- **Bands are relative to Hackney.** One sentence.
+- **Care homes in Census counts.** One sentence.
+- **Ecological fallacy.** One sentence.
+
+**What's missing**
+
+- **No indoor overheating data.** One sentence.
+- **No local heat death figures.** One sentence.
+:::
+
+## Row {height="15%"}
+
+::: {.card}
+Code and data: [GitHub repo](https://github.com/). Write-up: [link](https://github.com/).
+:::
 

@@ -70,17 +70,128 @@ ul.task-list li input[type="checkbox"] {
         
       </div>
     </div>
-<div id="dashboard-collapse" class="navbar-collapse collapse"><ul class="navbar-nav navbar-nav-scroll me-auto" role="tablist"><li class="nav-item" role="presentation"><a id="tab-overview" class="nav-link active" data-bs-toggle="tab" role="tab" data-bs-target="#overview" data-scrolling="false" href="#overview" aria-controls="overview" aria-selected="true"><span class="nav-link-text">Overview</span></a></li><li class="nav-item" role="presentation"><a id="tab-who-is-at-risk" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#who-is-at-risk" data-scrolling="false" href="#who-is-at-risk" aria-controls="who-is-at-risk" aria-selected="false"><span class="nav-link-text">Who is at risk?</span></a></li><li class="nav-item" role="presentation"><a id="tab-where-is-it-hottest" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#where-is-it-hottest" data-scrolling="false" href="#where-is-it-hottest" aria-controls="where-is-it-hottest" aria-selected="false"><span class="nav-link-text">Where is it hottest?</span></a></li><li class="nav-item" role="presentation"><a id="tab-where-do-they-overlap" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#where-do-they-overlap" data-scrolling="false" href="#where-do-they-overlap" aria-controls="where-do-they-overlap" aria-selected="false"><span class="nav-link-text">Where do they overlap?</span></a></li><li class="nav-item" role="presentation"><a id="tab-data-and-methods" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#data-and-methods" data-scrolling="false" href="#data-and-methods" aria-controls="data-and-methods" aria-selected="false"><span class="nav-link-text">Data and methods</span></a></li></ul></div></div>
+<div id="dashboard-collapse" class="navbar-collapse collapse"><ul class="navbar-nav navbar-nav-scroll me-auto" role="tablist"><li class="nav-item" role="presentation"><a id="tab-overview" class="nav-link active" data-bs-toggle="tab" role="tab" data-bs-target="#overview" data-scrolling="false" href="#overview" aria-controls="overview" aria-selected="true"><span class="nav-link-text">Overview</span></a></li><li class="nav-item" role="presentation"><a id="tab-who-is-at-risk" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#who-is-at-risk" data-scrolling="false" href="#who-is-at-risk" aria-controls="who-is-at-risk" aria-selected="false"><span class="nav-link-text">Who is at risk</span></a></li><li class="nav-item" role="presentation"><a id="tab-where-its-hot" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#where-its-hot" data-scrolling="false" href="#where-its-hot" aria-controls="where-its-hot" aria-selected="false"><span class="nav-link-text">Where it’s hot</span></a></li><li class="nav-item" role="presentation"><a id="tab-where-they-overlap" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#where-they-overlap" data-scrolling="false" href="#where-they-overlap" aria-controls="where-they-overlap" aria-selected="false"><span class="nav-link-text">Where they overlap</span></a></li><li class="nav-item" role="presentation"><a id="tab-data-and-methods" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#data-and-methods" data-scrolling="false" href="#data-and-methods" aria-controls="data-and-methods" aria-selected="false"><span class="nav-link-text">Data and methods</span></a></li></ul></div></div>
 </nav>
 </header>
 <div class="page-layout-custom quarto-dashboard-content bslib-gap-spacing html-fill-container bslib-page-fill quarto-dashboard-pages">  
 
 <div class="bslib-grid-item html-fill-item tab-content bslib-grid" data-layout="fill" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
 <div id="overview" class="dashboard-page tab-pane show active html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-overview">
-<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, max-content); grid-auto-columns: minmax(0, 1fr);">
-<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 20fr) minmax(3em, 20fr) minmax(3em, 60fr); grid-auto-columns: minmax(0, 1fr);">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-title="Who in Hackney is most at risk in a heatwave?" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header"><div class="card-title"><span style="display: inline">
+Who in Hackney is most at risk in a heatwave?
+</span></div></div>
 <div class="card-body html-fill-item html-fill-container">
-<p>Headline finding.</p>
+<p>One-sentence finding goes here, written last.</p>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr) minmax(3em, 1fr) minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card valuebox html-fill-item html-fill-container bslib-card bslib-value-box bg-light showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()">
+<div class="card-body html-fill-item html-fill-container">
+<div class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-people"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+<p>Residents aged 75+</p>
+</p>
+<p class="value-box-value">
+–
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card valuebox html-fill-item html-fill-container bslib-card bslib-value-box bg-light showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()">
+<div class="card-body html-fill-item html-fill-container">
+<div class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-house"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+<p>People aged 66+ living alone</p>
+</p>
+<p class="value-box-value">
+–
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card valuebox html-fill-item html-fill-container bslib-card bslib-value-box bg-light showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()">
+<div class="card-body html-fill-item html-fill-container">
+<div class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-thermometer-sun"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+<p>Hot neighbourhoods with many residents aged 75+</p>
+</p>
+<p class="value-box-value">
+<p>X of Y</p>
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-title="How does Hackney compare on each risk factor?" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header"><div class="card-title"><span style="display: inline">
+How does Hackney compare on each risk factor?
+</span></div></div>
+<div class="card-body html-fill-item html-fill-container">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Indicator</th>
+<th>Period</th>
+<th>Hackney</th>
+<th>England</th>
+<th>Compared with England</th>
+<th>Recent trend</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dementia diagnosis rate</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td>Depression</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<p>“Higher”, “similar” and “lower” are Fingertips’ comparisons with England. Only the dementia diagnosis rate and social contact are rated “better” or “worse”. GP-recorded prevalence is crude.</p>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
@@ -90,44 +201,46 @@ ul.task-list li input[type="checkbox"] {
 </bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
 </div>
 </div>
+</div>
 <div id="who-is-at-risk" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-who-is-at-risk">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 80fr) minmax(3em, 20fr); grid-auto-columns: minmax(0, 1fr);">
-<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr) minmax(3em, 1fr);
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 60fr) minmax(3em, 40fr);
 grid-auto-rows: minmax(0, 1fr);">
-<div class="card html-fill-item html-fill-container bslib-card" data-title="How Hackney compares with London and England" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
-<div class="card-header"><div class="card-title"><span style="display: inline">
-How Hackney compares with London and England
-</span></div></div>
-<div class="card-body html-fill-item html-fill-container">
-<p>Spine chart here</p>
-</div>
-<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
-    <template>Expand</template>
-    <span class="bslib-full-screen-enter badge rounded-pill">
-        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
-    </span>
-</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card tabset html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card tabset html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-header dashboard-card-no-title bslib-navs-card-title">
 
-<ul class="nav nav-tabs card-header-tabs" role="tablist" data-tabsetid="card-tabset-3"><li class="nav-item" role="presentation"><a href="#card-tabset-3-1" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Heart and lungs" aria-selected="true" class="nav-link active">Heart and lungs</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-3-2" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Dementia and mental health" aria-selected="false" class="nav-link">Dementia and mental health</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-3-3" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Diabetes" aria-selected="false" class="nav-link">Diabetes</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-3-4" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Isolation" aria-selected="false" class="nav-link">Isolation</a></li></ul></div>
+<ul class="nav nav-tabs card-header-tabs" role="tablist" data-tabsetid="card-tabset-6"><li class="nav-item" role="presentation"><a href="#card-tabset-6-1" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Latest" aria-selected="true" class="nav-link active">Latest</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-6-2" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Over time" aria-selected="false" class="nav-link">Over time</a></li></ul></div>
 
 
-
-
-<div class="tab-content html-fill-item html-fill-container" data-tabset-id="card-tabset-3"><div class="tab-pane active show html-fill-item html-fill-container" role="tabpanel" id="card-tabset-3-1"><div class="card-body html-fill-item html-fill-container" data-title="Heart and lungs">
-<p>Funnel plot for one headline indicator goes here.</p>
-</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-3-2"><div class="card-body html-fill-item html-fill-container" data-title="Dementia and mental health">
-<p>Funnel plot for one headline indicator goes here.</p>
-</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-3-3"><div class="card-body html-fill-item html-fill-container" data-title="Diabetes">
-<p>Funnel plot for diabetes prevalence goes here.</p>
-</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-3-4"><div class="card-body html-fill-item html-fill-container" data-title="Isolation">
-<p>Funnel plot for social isolation goes here.</p>
+<div class="tab-content html-fill-item html-fill-container" data-tabset-id="card-tabset-6"><div class="tab-pane active show html-fill-item html-fill-container" role="tabpanel" id="card-tabset-6-1"><div class="card-body html-fill-item html-fill-container" data-title="Latest">
+<div class="cell-output-display html-fill-item html-fill-container">
+<img src="index_files/figure-html/who-latest-1.png" class="img-fluid quarto-dashboard-img-contain">
+</div>
+<p>Panels named after a condition show the share of GP-registered patients with that diagnosis. These rates are crude (not age-standardised), so Hackney’s young population lowers them.</p>
+<p>Social contact is from 2019/20, the latest year with a Hackney value.</p>
+</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-6-2"><div class="card-body html-fill-item html-fill-container" data-title="Over time">
+<p>Trend panels go here: the same indicators as lines for Hackney, London and England, broken where a register definition changed.</p>
+<p>Age has no trend because it comes from a single census.</p>
 </div></div></div><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
     <span class="bslib-full-screen-enter badge rounded-pill">
         <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
     </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-title="Dementia diagnosis rate" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header"><div class="card-title"><span style="display: inline">
+Dementia diagnosis rate
+</span></div></div>
+<div class="card-body html-fill-item html-fill-container">
+<p>Dot chart goes here: every London borough sorted by value, Hackney highlighted and named, London average line and shaded typical range.</p>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
 </bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
 </div>
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
 grid-auto-rows: minmax(0, 1fr);">
@@ -136,7 +249,7 @@ grid-auto-rows: minmax(0, 1fr);">
 Reading this page
 </span></div></div>
 <div class="card-body html-fill-item html-fill-container">
-<p>Sentences interpreting intervals and funnel charts</p>
+<p>Two sentences go here: what the intervals mean, and that the funnels compare Hackney with every other London borough.</p>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
@@ -147,14 +260,14 @@ Reading this page
 </div>
 </div>
 </div>
-<div id="where-is-it-hottest" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-where-is-it-hottest">
-<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
+<div id="where-its-hot" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-where-its-hot">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 75fr) minmax(3em, 25fr); grid-auto-columns: minmax(0, 1fr);">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 60fr) minmax(3em, 40fr);
 grid-auto-rows: minmax(0, 1fr);">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
-<div class="card html-fill-item html-fill-container bslib-card" data-title="Surface temperature and tree cover by neighbourhood" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card html-fill-item html-fill-container bslib-card" data-title="Which neighbourhoods get hottest?" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-header"><div class="card-title"><span style="display: inline">
-Surface temperature and tree cover by neighbourhood
+Which neighbourhoods get hottest?
 </span></div></div>
 <div class="card-body html-fill-item html-fill-container">
 <p>Interactive LSOA map goes here, with surface temperature and tree cover as layers you switch between.</p>
@@ -166,13 +279,13 @@ Surface temperature and tree cover by neighbourhood
         <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
     </span>
 </bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
-</div><div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 1fr) minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
+</div><div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
 <div class="card html-fill-item html-fill-container bslib-card" data-title="Are the hottest neighbourhoods the most deprived?" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-header"><div class="card-title"><span style="display: inline">
 Are the hottest neighbourhoods the most deprived?
 </span></div></div>
 <div class="card-body html-fill-item html-fill-container">
-<p>Scatter of temperature against deprivation goes here.</p>
+<p>Scatter of surface temperature against IoD 2025 score goes here, one point per LSOA.</p>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
@@ -180,12 +293,16 @@ Are the hottest neighbourhoods the most deprived?
         <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
     </span>
 </bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
-<div class="card html-fill-item html-fill-container bslib-card" data-title="Hot days per year since 1960" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+</div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-title="Is Hackney getting more hot days?" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-header"><div class="card-title"><span style="display: inline">
-Hot days per year since 1960
+Is Hackney getting more hot days?
 </span></div></div>
 <div class="card-body html-fill-item html-fill-container">
-<p>Line chart of days above 25°C goes here.</p>
+<p>Line chart of days above 25°C per year since 1960 goes here, averaged over the HadUK-Grid cells covering Hackney.</p>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
@@ -196,19 +313,18 @@ Hot days per year since 1960
 </div>
 </div>
 </div>
-</div>
-<div id="where-do-they-overlap" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-where-do-they-overlap">
-<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 65fr) minmax(3em, 35fr); grid-auto-columns: minmax(0, 1fr);">
+<div id="where-they-overlap" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-where-they-overlap">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 70fr) minmax(3em, 30fr);
 grid-auto-rows: minmax(0, 1fr);">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
-<div class="card html-fill-item html-fill-container bslib-card" data-title="Where heat and at-risk residents overlap" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card html-fill-item html-fill-container bslib-card" data-title="Where do hot neighbourhoods and older residents coincide?" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-header"><div class="card-title"><span style="display: inline">
-Where heat and at-risk residents overlap
+Where do hot neighbourhoods and older residents coincide?
 </span></div></div>
 <div class="card-body html-fill-item html-fill-container">
-<p>Interactive bivariate map goes here, with care homes and cool spaces as points you can switch on and off.</p>
-<p>This shows where hot neighbourhoods and at-risk residents coincide, not which residents are actually exposed.</p>
+<p>Interactive bivariate map goes here: surface temperature against share aged 75+, with care homes and cool spaces as points you can switch on and off.</p>
+<p>This shows where hot neighbourhoods and older residents coincide, not which residents are actually exposed.</p>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
@@ -222,7 +338,8 @@ Where heat and at-risk residents overlap
 How to read the map
 </span></div></div>
 <div class="card-body html-fill-item html-fill-container">
-<p>3×3 bivariate legend goes here, plus one sentence on what the darkest corner means.</p>
+<p>3×3 bivariate legend goes here.</p>
+<p>One sentence on what the darkest corner means, and that “hot” and “older” are relative to the rest of Hackney.</p>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
@@ -231,29 +348,101 @@ How to read the map
     </span>
 </bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
 </div>
-</div>
-<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
-grid-auto-rows: minmax(0, 1fr);">
-<div class="card html-fill-item html-fill-container bslib-card" data-title="Hot neighbourhoods with many at-risk residents" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
-<div class="card-header"><div class="card-title"><span style="display: inline">
-Hot neighbourhoods with many at-risk residents
-</span></div></div>
-<div class="card-body html-fill-item html-fill-container">
-<p>Priority list goes here: neighbourhood, heat level, at-risk level, distance to nearest cool space.</p>
-</div>
-<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
-    <template>Expand</template>
-    <span class="bslib-full-screen-enter badge rounded-pill">
-        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
-    </span>
-</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
 </div>
 </div>
 </div>
 <div id="data-and-methods" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-data-and-methods">
-<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: ; grid-auto-columns: minmax(0, 1fr);">
-<div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden html-fill-item html-fill-container">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 85fr) minmax(3em, 15fr); grid-auto-columns: minmax(0, 1fr);">
+<div class="card tabset html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header dashboard-card-no-title bslib-navs-card-title">
 
+<ul class="nav nav-tabs card-header-tabs" role="tablist" data-tabsetid="card-tabset-14"><li class="nav-item" role="presentation"><a href="#card-tabset-14-1" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Sources" aria-selected="true" class="nav-link active">Sources</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-14-2" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Methods" aria-selected="false" class="nav-link">Methods</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-14-3" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Limitations" aria-selected="false" class="nav-link">Limitations</a></li></ul></div>
+
+
+
+<div class="tab-content html-fill-item html-fill-container" data-tabset-id="card-tabset-14"><div class="tab-pane active show html-fill-item html-fill-container" role="tabpanel" id="card-tabset-14-1"><div class="card-body html-fill-item html-fill-container" data-title="Sources">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>What it gives</th>
+<th>Period</th>
+<th>Geography</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OHID Fingertips</td>
+<td>GP-recorded prevalence, dementia diagnosis rate, social contact</td>
+<td>Varies by indicator</td>
+<td>Borough</td>
+<td>Open Government Licence</td>
+</tr>
+<tr class="even">
+<td>Census 2021 (Nomis)</td>
+<td>Age, older people living alone</td>
+<td>2021</td>
+<td>LSOA</td>
+<td>Open Government Licence</td>
+</tr>
+</tbody>
+</table>
+<p>Remaining rows from the plan’s data sources table go here.</p>
+</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-14-2"><div class="card-body html-fill-item html-fill-container" data-title="Methods">
+<p><strong>Confidence intervals.</strong> What the 95% interval means, in two or three sentences.</p>
+<p><strong>Funnel plots and overdispersion.</strong> How the limits are drawn, why they’re widened, and why only two indicators get a funnel.</p>
+<p><strong>Crude rates.</strong> Why GP prevalence isn’t age-standardised, and what that means in a young borough.</p>
+<p><strong>Surface temperature.</strong> Which Landsat summer was used, how it’s averaged to LSOAs, and that it measures surfaces rather than air.</p>
+<p><strong>Bivariate bands.</strong> How the three bands are drawn across Hackney’s LSOAs.</p>
+<p><strong>Change of data source.</strong> Fingertips is being replaced by Find public health data; which one this dashboard uses.</p>
+</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-14-3"><div class="card-body html-fill-item html-fill-container" data-title="Limitations">
+<strong>Who is at risk</strong>
+<ul>
+<li><strong>Crude rates.</strong> One sentence.</li>
+<li><strong>GP registers count diagnoses.</strong> One sentence.</li>
+<li><strong>Evidence comes from elsewhere.</strong> One sentence.</li>
+</ul>
+<strong>Where it’s hot and where they overlap</strong>
+<ul>
+<li><strong>Surface, not air, temperature.</strong> One sentence.</li>
+<li><strong>Old tree cover data.</strong> One sentence.</li>
+<li><strong>Bands are relative to Hackney.</strong> One sentence.</li>
+<li><strong>Care homes in Census counts.</strong> One sentence.</li>
+<li><strong>Ecological fallacy.</strong> One sentence.</li>
+</ul>
+<strong>What’s missing</strong>
+<ul>
+<li><strong>No indoor overheating data.</strong> One sentence.</li>
+<li><strong>No local heat death figures.</strong> One sentence.</li>
+</ul>
+</div></div></div><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<p>Code and data: <a href="https://github.com/">GitHub repo</a>. Write-up: <a href="https://github.com/">link</a>.</p>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden html-fill-item html-fill-container">
+
+</div>
 </div>
 </div>
 </div>
