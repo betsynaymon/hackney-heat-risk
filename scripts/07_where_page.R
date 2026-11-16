@@ -5,6 +5,7 @@
 #
 # Input:  data-raw/hackney_lst_summer2026.csv  (06_lst_landsat.js)
 #         data-raw/File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv
+#         data-raw/MSOA-Names-2.3.csv
 # Output: data/where_lsoa.rds
 # ----------------------------------------------
 
@@ -56,7 +57,7 @@ canopy <- pieces |>
   st_drop_geometry() |>
   group_by(lsoa_code = LSOA21CD) |>
   summarise(tree_canopy = weighted.mean(tree_canopy, piece_area),
-            main_share  = max(piece_area) / first(lsoa_area),,
+            main_share  = max(piece_area) / first(lsoa_area),
             covered     = sum(piece_area) / first(lsoa_area))
 
 where <- where |>
@@ -74,10 +75,17 @@ sum(where$main_share < 0.9)
 cor(where$lst, where$tree_canopy, method = "spearman")
 
 # ----------- 3. Save plot-ready data -----------
+# House of Commons Library MSOA names, version 2.3 (2021 MSOAs)
+msoa_names <- read_csv("data-raw/MSOA-Names-2.3.csv", show_col_types = FALSE) |>
+  select(msoa_name = msoa21nm, msoa_hcl_name = msoa21hclnm)
+
 where_lsoa <- hackney_lsoa |>
   select(lsoa_code = LSOA21CD) |>
   left_join(where, by = "lsoa_code") |>
-  select(lsoa_code, lsoa_name, lst, tree_canopy, imd_score, imd_decile) |>
+  mutate(msoa_name = str_sub(lsoa_name, 1, -2)) |>    # "Hackney 002A" -> "Hackney 002"
+  left_join(msoa_names, by = "msoa_name") |>
+  select(lsoa_code, lsoa_name, msoa_hcl_name, lst, tree_canopy,
+         imd_score, imd_decile) |>
   st_transform(4326)
 
 # Check: 149 LSOAs, no missing values

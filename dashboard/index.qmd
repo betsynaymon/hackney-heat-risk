@@ -6,12 +6,19 @@ format: dashboard
 #| label: setup
 #| include: false
 library(tidyverse)
+library(sf)
+library(leaflet)
+library(biscale)
 
 who_latest  <- read_rds(here::here("data", "who_latest.rds"))
 hackney_col <- "#C8553D"
+bi_palette  <- "BlueOr"   # bivariate palette for page 4's map and legend
 who_trend   <- read_rds(here::here("data", "who_trend.rds"))
 who_trend_gaps <- read_rds(here::here("data", "who_trend_gaps.rds"))
 dementia_dx <- read_rds(here::here("data", "dementia_dx_london.rds"))
+where_lsoa  <- read_rds(here::here("data", "where_lsoa.rds"))
+where_df    <- st_drop_geometry(where_lsoa)   # for the scatters
+overlap     <- read_rds(here::here("data", "overlap.rds"))
 ```
 
 # Overview
@@ -198,20 +205,115 @@ The lines through the dots on the Latest tab are 95% intervals, the range of und
 
 ### Column {width="60%"}
 
-::: {.card title="Which neighbourhoods get hottest?"}
-Interactive LSOA map goes here, with surface temperature and tree cover as layers you switch between.
+::: {.card title="Hackney's hottest neighbourhoods are its least leafy, not its most deprived"}
+```{r}
+#| label: where-map
+# One colour scale per layer
+pal_lst    <- colorNumeric("YlOrRd", domain = where_lsoa$lst)
+pal_canopy <- colorNumeric("Greens", domain = where_lsoa$tree_canopy)
 
-Satellites measure how hot surfaces get, not the air people feel. Tree cover data are from 2013.
+# Hover label: readable name, then the three values
+hover <- sprintf(
+  "<strong>%s (%s)</strong><br>Surface temperature: %.1f°C<br>Tree cover: %.0f%%<br>Deprivation: decile %d of 10 (1 = most deprived)",
+  where_lsoa$msoa_hcl_name,
+  str_sub(where_lsoa$lsoa_name, -4),
+  where_lsoa$lst,
+  where_lsoa$tree_canopy,
+  where_lsoa$imd_decile
+) |>
+  lapply(htmltools::HTML)
+
+leaflet(where_lsoa) |>
+  addProviderTiles(providers$Esri.WorldGrayCanvas) |>
+  addPolygons(
+    group = "Surface temperature",
+    fillColor = ~pal_lst(lst), fillOpacity = 0.8,
+    color = "white", weight = 0.5,
+    label = hover,
+    highlightOptions = highlightOptions(weight = 2, color = "#333333",
+                                        bringToFront = TRUE)
+  ) |>
+  addPolygons(
+    group = "Tree cover",
+    fillColor = ~pal_canopy(tree_canopy), fillOpacity = 0.8,
+    color = "white", weight = 0.5,
+    label = hover,
+    highlightOptions = highlightOptions(weight = 2, color = "#333333",
+                                        bringToFront = TRUE)
+  ) |>
+  addLayersControl(
+    baseGroups = c("Surface temperature", "Tree cover"),
+    options = layersControlOptions(collapsed = FALSE)
+  ) |>
+  addLegend(pal = pal_lst, values = ~lst, opacity = 0.8,
+            title = "Surface<br>temperature",
+            labFormat = labelFormat(suffix = "°C"),
+            position = "bottomright",
+            className = "info legend legend-lst") |>
+  addLegend(pal = pal_canopy, values = ~tree_canopy, opacity = 0.8,
+            title = "Tree cover",
+            labFormat = labelFormat(suffix = "%"),
+            position = "bottomright",
+            className = "info legend legend-canopy") |>
+  htmlwidgets::onRender("
+    function(el, x) {
+      var map = this;
+      function showLegend(name) {
+        el.querySelector('.legend-lst').style.display =
+          name === 'Surface temperature' ? '' : 'none';
+        el.querySelector('.legend-canopy').style.display =
+          name === 'Tree cover' ? '' : 'none';
+      }
+      showLegend('Surface temperature');
+      map.on('baselayerchange', function(e) { showLegend(e.name); });
+    }
+  ")
+```
+
+Satellites measure how hot surfaces get, not the air people feel, and Landsat passes in the late morning, before the afternoon peak. Tree cover data are from 2013.
 :::
 
 ### Column {.tabset width="40%"}
+::: {.card title="Deprivation" fill = "false"}
+Surface temperature barely changes with deprivation: Hackney's most and least deprived neighbourhoods run about as hot.
 
-::: {.card title="Are the hottest neighbourhoods the most deprived?"}
-Scatter of surface temperature against IoD 2025 score goes here, one point per LSOA.
+```{r}
+#| label: where-deprivation
+#| fig-width: 5
+#| fig-height: 4
+
+# Shared base for both tabs: same points, temperature axis and theme
+lst_scatter <- ggplot(where_df, aes(y = lst)) +
+  geom_point(colour = hackney_col, alpha = 0.6, size = 2) +
+  scale_y_continuous(labels = scales::label_number(suffix = "°C")) +
+  labs(y = NULL, x = "Deprivation score") + 
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.minor = element_blank())
+
+lst_scatter +
+  aes(x = imd_score) +
+  expand_limits(x = 0)
+
+```
+
+Higher scores are more deprived. Most Hackney neighbourhoods are in England's most deprived 40%, but scores still run from 3 to 61, so a link would show if there were one.
 :::
 
-::: {.card title="tree cover correlation"}
-update
+::: {.card title="Tree cover" fill="false"}
+Neighbourhoods with more tree cover have cooler surfaces.
+
+```{r}
+#| label: where-tree-cover
+#| fig-width: 5
+#| fig-height: 4
+lst_scatter +
+  aes(x = tree_canopy) +
+  expand_limits(x = 0) +
+  scale_x_continuous(labels = scales::label_number(suffix = "%")) +
+  labs(y = NULL, x = "Share of area under tree canopy") 
+```
+
+Tree cover data are from 2013. Leafy neighbourhoods often contain parks, so part of the cooling may come from the park as a whole, not only its trees.
 :::
 
 ## Row {height="25%"}
@@ -227,17 +329,86 @@ Line chart of days above 25°C per year since 1960 goes here, averaged over the 
 ### Column {width="70%"}
 
 ::: {.card title="Where do hot neighbourhoods and older residents coincide?"}
-Interactive bivariate map goes here: surface temperature against share aged 75+, with care homes and cool spaces as points you can switch on and off.
+```{r}
+#| label: overlap-map
+lsoa    <- overlap$lsoa
+bi_cols <- bi_pal(bi_palette, dim = 3, preview = FALSE)
 
-This shows where hot neighbourhoods and older residents coincide, not which residents are actually exposed.
+# Hover for each LSOA, flagging care homes because their residents raise the 75+ share
+care_txt <- if_else(lsoa$n_care_homes > 0,
+                    "<br>Has a care home; its residents are counted here", "")
+
+hover <- sprintf(
+  "<strong>%s (%s)</strong><br>Surface temperature: %.1f°C (%s in Hackney)<br>Aged 75+: %.1f%%, %d residents (%s in Hackney)%s",
+  lsoa$msoa_hcl_name, str_sub(lsoa$lsoa_name, -4),
+  lsoa$lst, tolower(lsoa$heat_band),
+  lsoa$share_75plus, lsoa$aged_75plus, tolower(lsoa$age_band),
+  care_txt
+) |>
+  lapply(htmltools::HTML)
+
+care_hover <- sprintf("<strong>%s</strong><br>Care home",
+                      overlap$care_homes$name) |>
+  lapply(htmltools::HTML)
+
+cool_hover <- sprintf("<strong>%s</strong><br>Cool space<br>%s",
+                      overlap$cool_spaces$name,
+                      overlap$cool_spaces$opening_hours) |>
+  lapply(htmltools::HTML)
+
+leaflet(lsoa) |>
+  addProviderTiles(providers$Esri.WorldGrayCanvas) |>
+  addMapPane("points", zIndex = 450) |>
+  addPolygons(
+    fillColor = unname(bi_cols[lsoa$bi_class]), fillOpacity = 0.8,
+    color = "white", weight = 0.5,
+    label = hover,
+    highlightOptions = highlightOptions(weight = 2, color = "#333333",
+                                        bringToFront = TRUE)
+  ) |>
+  addCircleMarkers(
+    data = overlap$care_homes, group = "Care homes",
+    radius = 6, color = "white", weight = 1.5, opacity = 1,
+    fillColor = "#333333", fillOpacity = 1,
+    label = care_hover,
+    options = pathOptions(pane = "points")
+  ) |>
+  addCircleMarkers(
+    data = overlap$cool_spaces, group = "Cool spaces",
+    radius = 6, color = "#333333", weight = 2, opacity = 1,
+    fillColor = "white", fillOpacity = 1,
+    label = cool_hover,
+    options = pathOptions(pane = "points")
+  ) |>
+  addLayersControl(
+    overlayGroups = c("Care homes", "Cool spaces"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+```
+
+This shows where hot neighbourhoods and older residents coincide, not which residents are actually exposed. Care homes are from the CQC directory (October 2026); cool spaces are the nine indoor sites on the GLA's 2025 map, and parks aren't included.
 :::
 
 ### Column {width="30%"}
 
-::: {.card title="How to read the map"}
-3×3 bivariate legend goes here.
+::: {.card title="How to read the map" fill="false"}
+```{r}
+#| label: overlap-legend
+#| fig-width: 3.5
+#| fig-height: 3.5
+lsoa_df   <- st_drop_geometry(overlap$lsoa)
+n_hot_old <- sum(lsoa_df$bi_class == "3-3")
+hot_min   <- round(min(lsoa_df$lst[lsoa_df$heat_band == "Highest third"]), 1)
+old_min   <- round(min(lsoa_df$share_75plus[lsoa_df$age_band == "Highest third"]), 1)
 
-One sentence on what the darkest corner means, and that "hot" and "older" are relative to the rest of Hackney.
+bi_legend(pal = bi_palette, dim = 3,
+          xlab = "Hotter", ylab = "More aged 75+",
+          size = 12)
+```
+
+The darkest colour marks the `r n_hot_old` neighbourhoods in both Hackney's hottest third and its oldest third. Both are relative to the rest of Hackney: the hottest third starts at `r hot_min`°C, and the oldest third at `r old_min`% of residents aged 75+.
+
+Solid dark circles are care homes; white circles are cool spaces.
 :::
 
 # Data and methods
