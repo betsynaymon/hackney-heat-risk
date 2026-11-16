@@ -18,6 +18,7 @@ who_trend_gaps <- read_rds(here::here("data", "who_trend_gaps.rds"))
 dementia_dx <- read_rds(here::here("data", "dementia_dx_london.rds"))
 where_lsoa  <- read_rds(here::here("data", "where_lsoa.rds"))
 where_df    <- st_drop_geometry(where_lsoa)   # for the scatters
+hot_days    <- read_rds(here::here("data", "hot_days.rds"))
 overlap     <- read_rds(here::here("data", "overlap.rds"))
 ```
 
@@ -201,7 +202,7 @@ The lines through the dots on the Latest tab are 95% intervals, the range of und
 
 # Where it's hot
 
-## Row {height="75%"}
+## Row {height="70%"}
 
 ### Column {width="60%"}
 
@@ -316,10 +317,28 @@ lst_scatter +
 Tree cover data are from 2013. Leafy neighbourhoods often contain parks, so part of the cooling may come from the park as a whole, not only its trees.
 :::
 
-## Row {height="25%"}
+## Row {height="30%"}
 
 ::: {.card title="Is Hackney getting more hot days?"}
-Line chart of days above 25°C per year since 1960 goes here, averaged over the HadUK-Grid cells covering Hackney.
+```{r}
+#| label: where-hot-days
+#| fig-width: 12
+#| fig-height: 1.5
+ggplot(hot_days, aes(x = year)) +
+  geom_col(aes(y = days), fill = hackney_col, alpha = 0.3, width = 0.8) +
+  geom_line(aes(y = avg_10y), colour = hackney_col, linewidth = 1, na.rm = TRUE) +
+  scale_x_continuous(breaks = scales::breaks_width(10),
+                     expand = expansion(mult = 0.01)) +
+  scale_y_continuous(n.breaks = 3,
+                     labels = scales::label_number(suffix = " days"),
+                     expand = expansion(mult = c(0, 0.05))) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.minor   = element_blank(),
+        panel.grid.major.x = element_blank())
+```
+
+Each column is a year's days above 25°C, and the line is a 10-year average, so it starts in 1940. These are air temperatures, not surface temperatures, and end in 2025.
 :::
 
 # Where they overlap
@@ -404,9 +423,17 @@ old_min   <- round(min(lsoa_df$share_75plus[lsoa_df$age_band == "Highest third"]
 bi_legend(pal = bi_palette, dim = 3,
           xlab = "Hotter", ylab = "More aged 75+",
           size = 12)
+
+share_by_heat <- lsoa_df |>
+  group_by(heat_band) |>
+  summarise(n = sum(aged_75plus)) |>
+  mutate(share = round(n / sum(n) * 100))
+
+share_cool <- share_by_heat$share[share_by_heat$heat_band == "Lowest third"]
+share_hot  <- share_by_heat$share[share_by_heat$heat_band == "Highest third"]
 ```
 
-The darkest colour marks the `r n_hot_old` neighbourhoods in both Hackney's hottest third and its oldest third. Both are relative to the rest of Hackney: the hottest third starts at `r hot_min`°C, and the oldest third at `r old_min`% of residents aged 75+.
+The darkest colour marks the `r n_hot_old` neighbourhoods in both Hackney's hottest third and its oldest third. Both are relative to the rest of Hackney: the hottest third starts at `r hot_min`°C, and the oldest third at `r old_min`% of residents aged 75+. `r share_cool`% of residents aged 75+ live in Hackney's coolest third and `r share_hot`% in its hottest, and the gap holds without the neighbourhoods that have a care home.
 
 Solid dark circles are care homes; white circles are cool spaces.
 :::
