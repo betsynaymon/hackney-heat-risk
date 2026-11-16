@@ -6,7 +6,9 @@
 # Input:  data-raw/hackney_lst_summer2026.csv  (06_lst_landsat.js)
 #         data-raw/File_7_IoD2025_All_Ranks_Scores_Deciles_Population_Denominators.csv
 #         data-raw/MSOA-Names-2.3.csv
+#         data-raw/haduk/*.nc
 # Output: data/where_lsoa.rds
+#         data/hot_days.rds
 # ----------------------------------------------
 
 # ----------- 1. Surface temperature and deprivation -----------
@@ -93,3 +95,51 @@ nrow(where_lsoa)
 colSums(is.na(st_drop_geometry(where_lsoa)))
 
 write_rds(where_lsoa, "data/where_lsoa.rds")
+
+# ----------- 4. Hot days -----------
+# HadUK-Grid v1.3.2, 1km annual summer days (max temperature above 25°C)
+files <- list.files("data-raw/haduk",
+                    pattern = "^summerdays_hadukgrid_uk_1km_ann_.*\\.nc$",
+                    full.names = TRUE)
+
+summer_days <- terra::rast(files)
+
+# Already British National Grid, but the files don't name the datum,
+# so set the CRS rather than reproject
+terra::crs(summer_days) <- "EPSG:27700"
+
+# Checks: 95 files, one layer each
+length(files)
+terra::nlyr(summer_days)
+
+# Hackney as one outline, from the 2021 LSOAs read in section 2
+st_crs(hackney_lsoa)$input   # expect British National Grid
+hackney_v <- terra::vect(st_union(hackney_lsoa))
+
+# Check: cells Hackney touches, and the share of each it covers
+cells <- terra::extract(summer_days[[1]], hackney_v, exact = TRUE)
+nrow(cells)
+sum(cells$fraction)   # Hackney's area in km², about 19
+
+# Area-weighted mean, so edge cells count by how much falls inside Hackney
+hackney_mean <- terra::extract(summer_days, hackney_v, fun = mean,
+                               exact = TRUE, ID = FALSE)
+
+hot_days <- tibble(
+  year = as.integer(format(terra::time(summer_days), "%Y")),
+  days = unlist(hackney_mean, use.names = FALSE)
+)
+
+# Average of each year and the nine before it, so the line runs to 2025
+hot_days <- hot_days |>
+  mutate(avg_10y = as.numeric(stats::filter(days, rep(1/10, 10), sides = 1)))
+
+# Checks: one row per year, no gaps, no missing values
+nrow(hot_days)
+all(diff(hot_days$year) == 1)
+sum(is.na(hot_days$days))
+
+# Check: the hottest years
+hot_days |> slice_max(days, n = 5)
+
+write_rds(hot_days, "data/hot_days.rds")
