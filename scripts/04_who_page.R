@@ -5,9 +5,9 @@
 #
 # Input:  data-raw/fingertips_borough.csv   (01_fetch_fingertips.R)
 #         data/census_age_areas.csv         (02_process_census.R)
-# Output: data/who_latest.rds         "Latest" panels, at-a-glance table
-#         data/who_trend.rds          "Over time" panels
-#         data/dementia_dx_london.rds Dementia diagnosis rate, London boroughs
+# Output: data/who_latest.rds               "Latest" panels, at-a-glance table
+#         data/who_trend.rds                "Over time" panels
+#         data/dementia_dx_london.rds       Dementia diagnosis rate, London boroughs
 # ----------------------------------------------
 
 # ----------- 1. Load and clean -----------

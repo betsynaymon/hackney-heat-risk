@@ -204,10 +204,14 @@ Interactive LSOA map goes here, with surface temperature and tree cover as layer
 Satellites measure how hot surfaces get, not the air people feel. Tree cover data are from 2013.
 :::
 
-### Column {width="40%"}
+### Column {.tabset width="40%"}
 
 ::: {.card title="Are the hottest neighbourhoods the most deprived?"}
 Scatter of surface temperature against IoD 2025 score goes here, one point per LSOA.
+:::
+
+::: {.card title="tree cover correlation"}
+update
 :::
 
 ## Row {height="25%"}
