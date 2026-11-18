@@ -1,6 +1,9 @@
 ---
 title: "Heat risk in Hackney"
-format: dashboard
+format: 
+  dashboard:
+    css: styles.css
+
 ---
 ```{r}
 #| label: setup
@@ -10,6 +13,20 @@ library(sf)
 library(leaflet)
 library(biscale)
 
+census_hh   <- read_csv(here::here("data", "census_households_hackney.csv"),
+                        show_col_types = FALSE)
+overlap     <- read_rds(here::here("data", "overlap.rds"))
+# Numbers used in text on the Overview and page 4
+lsoa_df   <- st_drop_geometry(overlap$lsoa)
+n_hot_old <- sum(lsoa_df$bi_class == "3-3")
+
+share_by_heat <- lsoa_df |>
+  group_by(heat_band) |>
+  summarise(n = sum(aged_75plus)) |>
+  mutate(share = round(n / sum(n) * 100))
+
+share_cool <- share_by_heat$share[share_by_heat$heat_band == "Lowest third"]
+share_hot  <- share_by_heat$share[share_by_heat$heat_band == "Highest third"]
 who_latest  <- read_rds(here::here("data", "who_latest.rds"))
 hackney_col <- "#C8553D"
 bi_palette  <- "BlueOr"   # bivariate palette for page 4's map and legend
@@ -19,7 +36,6 @@ dementia_dx <- read_rds(here::here("data", "dementia_dx_london.rds"))
 where_lsoa  <- read_rds(here::here("data", "where_lsoa.rds"))
 where_df    <- st_drop_geometry(where_lsoa)   # for the scatters
 hot_days    <- read_rds(here::here("data", "hot_days.rds"))
-overlap     <- read_rds(here::here("data", "overlap.rds"))
 ```
 
 # Overview
@@ -32,34 +48,55 @@ One-sentence finding goes here, written last.
 
 ## Row {height="20%"}
 
-::: {.valuebox icon="people" color="light"}
-Residents aged 75+
+```{r}
+#| content: valuebox
+#| title: "Residents aged 75+"
+list(
+  icon  = "people",
+  color = "light",
+  value = scales::comma(sum(overlap$lsoa$aged_75plus))
+)
+```
 
-–
-:::
+```{r}
+#| content: valuebox
+#| title: "People aged 66+ living alone"
+list(
+  icon  = "house",
+  color = "light",
+  value = scales::comma(sum(census_hh$one_person_66plus))
+)
+```
 
-::: {.valuebox icon="house" color="light"}
-People aged 66+ living alone
+```{r}
+#| content: valuebox
+#| title: "Residents aged 75+ in Hackney's hottest third of neighbourhoods"
+hot_75plus <- with(overlap$lsoa, sum(aged_75plus[heat_band == "Highest third"]))
 
-–
-:::
-
-::: {.valuebox icon="thermometer-sun" color="light"}
-Hot neighbourhoods with many residents aged 75+
-
-X of Y
-:::
+list(
+  icon  = "thermometer-sun",
+  color = "light",
+  value = scales::comma(hot_75plus)
+)
+```
 
 ## Row {height="60%"}
+::: {.card title="Who is at risk"}
+Hackney has lower recorded rates of coronary heart disease, hypertension, diabetes and dementia than the London average, which fits its young population, but among London's highest recorded rates of depression and serious mental illness.
 
-::: {.card title="How does Hackney compare on each risk factor?"}
+[See who is at risk](#who-is-at-risk)
+:::
 
-| Indicator | Period | Hackney | England | Compared with England | Recent trend |
-|---|---|---|---|---|---|
-| Dementia diagnosis rate | – | – | – | – | – |
-| Depression | – | – | – | – | – |
+::: {.card title="Where it's hot"}
+Hackney's hottest neighbourhoods are its least leafy, not its most deprived. Since 1990, every decade has had more days above 25°C than any decade before it.
 
-"Higher", "similar" and "lower" are Fingertips' comparisons with England. Only the dementia diagnosis rate and social contact are rated "better" or "worse". GP-recorded prevalence is crude.
+[See where it's hot](#where-its-hot)
+:::
+
+::: {.card title="Where they overlap"}
+Older residents lean slightly towards Hackney's cooler neighbourhoods: `r share_cool`% of residents aged 75+ live in its coolest third and `r share_hot`% in its hottest. `r n_hot_old` neighbourhoods are in both its hottest and oldest thirds.
+
+[See where they overlap](#where-they-overlap)
 :::
 
 # Who is at risk {scrolling="true"}
@@ -149,6 +186,32 @@ who_trend |>
 Recorded depression rises partly because the register counts adults diagnosed since April 2006, so the window keeps lengthening. NHS Digital warns that 2020/21 GP figures may be inaccurate.
 
 Age has no trend because it comes from a single census. Dashed lines join the years either side of a missing value. Social contact has none for 2020/21, when the survey was voluntary because of COVID; depression has none for 2023/24 in the source data.
+:::
+
+::: {.card title="Table"}
+```{r}
+#| label: who-table
+# England's value for each row, to sit beside Hackney's
+england_values <- who_latest |>
+  filter(area == "England") |>
+  select(short_label, england = value)
+
+who_latest |>
+  filter(area == "Hackney") |>
+  left_join(england_values, by = "short_label") |>
+  arrange(short_label) |>
+  transmute(short_label, period,
+            hackney = value, england,
+            compared_england = coalesce(compared_england, "–"),
+            recent_trend     = coalesce(recent_trend, "–")) |>
+  mutate(across(c(hackney, england),
+                scales::label_number(accuracy = 0.1, suffix = "%"))) |>
+  knitr::kable(col.names = c("Indicator", "Period", "Hackney", "England",
+                             "Compared with England", "Recent trend"),
+               align = "llrrll")
+```
+
+Residents aged 75+ is from Census 2021, so it has no comparison or trend. Prevalence figures are crude GP-recorded rates. Fingertips judges only some indicators against England; "Not compared" means it makes no judgement, and a percentage after a judgement is the confidence level it used. Recent trend is Fingertips' own test of Hackney's values, so it can differ from how a line looks on the Over time tab.
 :::
 
 ### Column {width="40%"}
@@ -256,17 +319,13 @@ leaflet(where_lsoa) |>
             labFormat = labelFormat(suffix = "%"),
             position = "bottomright",
             className = "info legend legend-canopy") |>
-  htmlwidgets::onRender("
+    htmlwidgets::onRender("
     function(el, x) {
-      var map = this;
-      function showLegend(name) {
-        el.querySelector('.legend-lst').style.display =
-          name === 'Surface temperature' ? '' : 'none';
-        el.querySelector('.legend-canopy').style.display =
-          name === 'Tree cover' ? '' : 'none';
-      }
-      showLegend('Surface temperature');
-      map.on('baselayerchange', function(e) { showLegend(e.name); });
+      // Legends may not exist yet (leaflet waits until page 3 is visible),
+      // so mark the map with the selected layer and let CSS do the hiding
+      this.on('baselayerchange', function(e) {
+        el.classList.toggle('show-canopy', e.name === 'Tree cover');
+      });
     }
   ")
 ```
