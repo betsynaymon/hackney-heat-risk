@@ -1,0 +1,59 @@
+/*-- scss:defaults --*/
+
+// Colour tokens
+$body-color: #3D3935;   // body text: warm dark grey
+$note-color: #6F6861;   // notes and labels (used in the next section)
+$primary:    #A84430;   // text accent: links and tabs; darker than hackney_col for contrast
+
+// Navbar: quiet, so the maps carry the colour
+$navbar-bg: #FFFFFF;
+$navbar-fg: $body-color;
+$navbar-hl: $primary;   // hover and current page
+
+// Type scale
+$title-size: 1.1rem;    // card titles and tabs
+$text-size:  0.95rem;   // findings and other card text
+$note-size:  0.8rem;    // notes
+
+// Cards: no border, no shaded header bar
+$border-color: #DDD7D0;               // warm light grey for all lines, including tabs
+$card-border-color: $border-color;
+$card-cap-bg: #F2EFEC;   // warm light grey behind card titles and tabs
+/*-- scss:rules --*/
+
+// Card titles in bold, so they read as titles
+.card-header {
+  font-weight: 700;
+    font-size: $title-size;
+}
+
+// Tab labels stay regular; the active tab is marked by its outline
+.card-header .nav-link {
+  font-weight: 400;
+}
+
+// Everything else in a card sits a step below
+.card-body {
+  font-size: $text-size;
+}
+
+.note {
+  font-size: $note-size;
+  color: $note-color;
+}
+
+// Hairline under the white navbar
+.navbar {
+  border-bottom: 1px solid $border-color;
+}
+
+// Leaflet's controls and legends use the page font instead of Helvetica
+.leaflet-container {
+  font-family: inherit;
+}
+
+// Notes: caveats, how-to-read text and methods
+.note {
+  font-size: 0.875rem;
+  color: $note-color;
+}

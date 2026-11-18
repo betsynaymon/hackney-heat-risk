@@ -2,7 +2,11 @@
 title: "Heat risk in Hackney"
 format: 
   dashboard:
+    theme: [united, theme.scss]
     css: styles.css
+knitr:
+  opts_chunk:
+    dev: "ragg_png"
 
 ---
 ```{r}
@@ -12,6 +16,7 @@ library(tidyverse)
 library(sf)
 library(leaflet)
 library(biscale)
+library(ggiraph)
 
 census_hh   <- read_csv(here::here("data", "census_households_hackney.csv"),
                         show_col_types = FALSE)
@@ -29,13 +34,60 @@ share_cool <- share_by_heat$share[share_by_heat$heat_band == "Lowest third"]
 share_hot  <- share_by_heat$share[share_by_heat$heat_band == "Highest third"]
 who_latest  <- read_rds(here::here("data", "who_latest.rds"))
 hackney_col <- "#C8553D"
+# Plot tokens: keep in step with theme.scss
+hackney_text_col <- "#A84430"   # $primary: Hackney in text, labels and hover
+line_col         <- "#DDD7D0"   # $border-color
+text_col <- "#3D3935"   # $body-color
+note_col <- "#6F6861"   # $note-color
+text_pt  <- 11.4        # $text-size: 0.95rem ≈ 15 px (1 pt ≈ 1.33 px at 96 dpi)
+note_pt  <- 9.6         # $note-size: 0.8rem ≈ 13 px
+pct <- scales::label_number(accuracy = 0.1, suffix = "%")   # values in tooltips
+
+theme_hackney <- function() {
+  theme_minimal(base_size = text_pt, base_family = "Ubuntu") +
+    theme(
+      text             = element_text(colour = text_col),
+      axis.text        = element_text(size = note_pt, colour = note_col),
+      axis.title       = element_text(size = note_pt, colour = note_col),
+      legend.text      = element_text(size = note_pt),
+      strip.text       = element_text(size = text_pt, hjust = 0),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# geom_text labels don't take the theme's font
+update_geom_defaults("text", list(family = "Ubuntu", colour = text_col))
 bi_palette  <- "BlueOr"   # bivariate palette for page 4's map and legend
 who_trend   <- read_rds(here::here("data", "who_trend.rds"))
 who_trend_gaps <- read_rds(here::here("data", "who_trend_gaps.rds"))
 dementia_dx <- read_rds(here::here("data", "dementia_dx_london.rds"))
 where_lsoa  <- read_rds(here::here("data", "where_lsoa.rds"))
-where_df    <- st_drop_geometry(where_lsoa)   # for the scatters
+where_df <- st_drop_geometry(where_lsoa) |>
+  mutate(tooltip = sprintf(
+    "<strong>%s (%s)</strong><br>Surface temperature: %.1f°C<br>Tree cover: %.0f%%<br>Deprivation score: %.0f",
+    msoa_hcl_name, str_sub(lsoa_name, -4), lst, tree_canopy, imd_score
+  ))
 hot_days    <- read_rds(here::here("data", "hot_days.rds"))
+
+# Hover settings shared by every interactive plot
+girafe_hackney <- function(p, width, height,
+                           hover_css = sprintf("fill:%s; stroke:%s;",
+                                               hackney_text_col, hackney_text_col)) {
+  tooltip_css <- sprintf(
+    "background:#fff; border:1px solid %s; padding:6px 8px;
+     font-family:Ubuntu, sans-serif; font-size:0.8rem; color:%s;",
+    line_col, text_col
+  )
+  girafe(
+    ggobj = p, width_svg = width, height_svg = height,
+    options = list(
+      opts_tooltip(css = tooltip_css),
+      opts_hover(css = hover_css),
+      opts_hover_inv(css = "opacity:0.3;"),
+      opts_toolbar(saveaspng = FALSE)
+    )
+  )
+}
 ```
 
 # Overview
@@ -111,9 +163,18 @@ Older residents lean slightly towards Hackney's cooler neighbourhoods: `r share_
 #| label: who-latest
 #| fig-width: 7.5
 #| fig-height: 6
-ggplot(who_latest, aes(x = value, y = fct_rev(area), colour = area)) +
-  geom_linerange(aes(xmin = lower_ci, xmax = upper_ci), na.rm = TRUE) +
-  geom_point(size = 2.5) +
+p <- who_latest |>
+  mutate(tooltip = paste0(
+    "<strong>", short_label, "</strong><br>",
+    area, ": ", pct(value),
+    if_else(is.na(lower_ci), "",
+            paste0("<br>95% interval: ", pct(lower_ci), " to ", pct(upper_ci))),
+    "<br>", period
+  )) |>
+  ggplot(aes(x = value, y = fct_rev(area), colour = area,
+             tooltip = tooltip, data_id = area)) +
+  geom_linerange_interactive(aes(xmin = lower_ci, xmax = upper_ci), na.rm = TRUE) +
+  geom_point_interactive(size = 2.5) +
   facet_wrap(~ short_label, scales = "free_x", ncol = 3,
              labeller = label_wrap_gen(width = 24)) +  expand_limits(x = 0) +
   scale_x_continuous(
@@ -125,12 +186,13 @@ ggplot(who_latest, aes(x = value, y = fct_rev(area), colour = area)) +
     guide = "none"
   ) +
   labs(x = NULL, y = NULL) +
-  theme_minimal(base_size = 13) +
+  theme_hackney() +
   theme(
-    panel.grid.minor = element_blank(),
     panel.spacing    = unit(1.2, "lines"),
     plot.margin = margin(5, 15, 5, 5)
   )
+
+girafe_hackney(p, width = 7.5, height = 6, hover_css = "opacity:1;")
 ```
 
 Panels named after a condition show the share of GP-registered patients with that diagnosis. These rates are crude (not age-standardised), so Hackney's young population lowers them.
@@ -144,20 +206,21 @@ Social contact is from 2019/20, the latest year with a Hackney value.
 #| label: who-trend
 #| fig-width: 7.5
 #| fig-height: 6
-who_trend |>
-  # Reverse so England and London are drawn first and Hackney sits on top
-  mutate(area = fct_rev(area)) |>
+p <- who_trend |>
+  mutate(area = fct_rev(area),
+         tooltip = paste0("<strong>", short_label, "</strong><br>",
+                          area, ", ", period, ": ", pct(value))) |>
   arrange(area) |>
   ggplot(aes(x = year, y = value, colour = area,
-             group = interaction(series, area))) +
+             group = interaction(series, area), data_id = area)) +
   geom_segment(
     data = who_trend_gaps,
     aes(x = year, xend = next_year, y = value, yend = next_value,
         linetype = "Year with no value"),
     inherit.aes = FALSE, colour = "black", linewidth = 0.4
   ) +
-  geom_line(linewidth = 0.7, na.rm = TRUE) +
-  geom_point(size = 1.2, na.rm = TRUE) +
+  geom_line_interactive(linewidth = 0.7, na.rm = TRUE) +
+  geom_point_interactive(aes(tooltip = tooltip), size = 1.6, na.rm = TRUE) +
   facet_wrap(~ short_label, scales = "free_y", ncol = 3,
              labeller = label_wrap_gen(width = 24)) +
   expand_limits(y = 0) +
@@ -174,13 +237,14 @@ who_trend |>
   scale_linetype_manual(values = c("Year with no value" = "dashed"), name = NULL) +
   guides(linetype = guide_legend(position = "inside")) +
   labs(x = NULL, y = NULL, colour = NULL) +
-  theme_minimal(base_size = 13) +
+  theme_hackney() +
   theme(
     legend.position        = "top",
     legend.position.inside = c(0.75, 0.13),
-    panel.grid.minor       = element_blank(),
     panel.spacing          = unit(1.2, "lines")
   )
+
+girafe_hackney(p, width = 7.5, height = 6, hover_css = "opacity:1;")
 ```
 
 Recorded depression rises partly because the register counts adults diagnosed since April 2006, so the window keeps lengthening. NHS Digital warns that 2020/21 GP figures may be inaccurate.
@@ -225,13 +289,15 @@ Residents aged 75+ is from Census 2021, so it has no comparison or trend. Preval
 dx_band    <- filter(dementia_dx$band, level == "95")
 dx_hackney <- filter(dementia_dx$points, is_hackney)
 dx_extremes <- filter(dementia_dx$points, value %in% range(value))
+dx_points <- dementia_dx$points |>
+  mutate(tooltip = paste0("<strong>", area_name, "</strong><br>",
+                          "Diagnosis rate: ", pct(value)))
 
-ggplot(dementia_dx$points,
-       aes(x = value, y = fct_reorder(area_name, value))) +
+p <- ggplot(dx_points, aes(x = value, y = fct_reorder(area_name, value))) +
   annotate("rect", xmin = dx_band$lower, xmax = dx_band$upper,
            ymin = -Inf, ymax = Inf, fill = "grey92") +
   geom_vline(xintercept = dementia_dx$london_avg, colour = "grey50") +
-  geom_point(aes(colour = is_hackney), size = 2.5) +
+  geom_point_interactive(aes(colour = is_hackney, tooltip = tooltip, data_id = area_name), size = 2.5) +
   geom_text(data = dx_hackney, aes(label = area_name),
             colour = hackney_col, hjust = 1, nudge_x = -3.5, size = 4) +
   geom_text(data = dx_extremes, aes(label = area_name),
@@ -244,12 +310,13 @@ ggplot(dementia_dx$points,
   scale_colour_manual(values = c(`TRUE` = hackney_col, `FALSE` = "grey60"),
                       guide = "none") +
   labs(x = NULL, y = NULL) +
-  theme_minimal(base_size = 13) +
+  theme_hackney() +
   theme(
     axis.text.y        = element_blank(),
     panel.grid.major.y = element_blank(),
-    panel.grid.minor   = element_blank()
   )
+
+girafe_hackney(p, width = 5, height = 6, hover_css = "opacity:1;")
 ```
 
 Each dot is a London borough; the line is the London average and the shaded band is the range boroughs typically fall within, not a confidence interval. The rate is diagnosed patients aged 65+ as a share of the estimated number living with dementia, so higher is better. The lowest, the City of London, has an estimated 89 people with dementia, so its rate is far less certain than other boroughs’.
@@ -330,12 +397,16 @@ leaflet(where_lsoa) |>
   ")
 ```
 
+::: {.note}
 Satellites measure how hot surfaces get, not the air people feel, and Landsat passes in the late morning, before the afternoon peak. Tree cover data are from 2013.
+:::
 :::
 
 ### Column {.tabset width="40%"}
-::: {.card title="Deprivation" fill = "false"}
+::: {.card title="Deprivation" fill="false"}
+
 Surface temperature barely changes with deprivation: Hackney's most and least deprived neighbourhoods run about as hot.
+
 
 ```{r}
 #| label: where-deprivation
@@ -344,19 +415,20 @@ Surface temperature barely changes with deprivation: Hackney's most and least de
 
 # Shared base for both tabs: same points, temperature axis and theme
 lst_scatter <- ggplot(where_df, aes(y = lst)) +
-  geom_point(colour = hackney_col, alpha = 0.6, size = 2) +
+  geom_point_interactive(aes(tooltip = tooltip, data_id = lsoa_code),
+                         colour = hackney_col, alpha = 0.6, size = 2) +
   scale_y_continuous(labels = scales::label_number(suffix = "°C")) +
-  labs(y = NULL, x = "Deprivation score") + 
-  theme_minimal(base_size = 13) +
-  theme(panel.grid.minor = element_blank())
+  labs(y = NULL, x = "Deprivation score") +
+  theme_hackney()
 
-lst_scatter +
-  aes(x = imd_score) +
-  expand_limits(x = 0)
+p <- lst_scatter + aes(x = imd_score) + expand_limits(x = 0)
+girafe_hackney(p, width = 5, height = 4)
 
 ```
 
+::: {.note}
 Higher scores are more deprived. Most Hackney neighbourhoods are in England's most deprived 40%, but scores still run from 3 to 61, so a link would show if there were one.
+:::
 :::
 
 ::: {.card title="Tree cover" fill="false"}
@@ -366,14 +438,17 @@ Neighbourhoods with more tree cover have cooler surfaces.
 #| label: where-tree-cover
 #| fig-width: 5
 #| fig-height: 4
-lst_scatter +
+p <- lst_scatter +
   aes(x = tree_canopy) +
   expand_limits(x = 0) +
   scale_x_continuous(labels = scales::label_number(suffix = "%")) +
-  labs(y = NULL, x = "Share of area under tree canopy") 
+  labs(x = "Share of area under tree canopy")
+girafe_hackney(p, width = 5, height = 4)
 ```
 
+::: {.note}
 Tree cover data are from 2013. Leafy neighbourhoods often contain parks, so part of the cooling may come from the park as a whole, not only its trees.
+:::
 :::
 
 ## Row {height="30%"}
@@ -392,12 +467,13 @@ ggplot(hot_days, aes(x = year)) +
                      labels = scales::label_number(suffix = " days"),
                      expand = expansion(mult = c(0, 0.05))) +
   labs(x = NULL, y = NULL) +
-  theme_minimal(base_size = 13) +
-  theme(panel.grid.minor   = element_blank(),
-        panel.grid.major.x = element_blank())
+  theme_hackney() +
+  theme(panel.grid.major.x = element_blank())
 ```
 
+::: {.note}
 Each column is a year's days above 25°C, and the line is a 10-year average, so it starts in 1940. These are air temperatures, not surface temperatures, and end in 2025.
+:::
 :::
 
 # Where they overlap
@@ -497,56 +573,77 @@ The darkest colour marks the `r n_hot_old` neighbourhoods in both Hackney's hott
 Solid dark circles are care homes; white circles are cool spaces.
 :::
 
-# Data and methods
+# Data and methods {scrolling="true"}
 
-## Row {.tabset height="85%"}
+## Row {.tabset}
 
 ::: {.card title="Sources"}
 
 | Source | What it gives | Period | Geography | Licence |
-|---|---|---|---|---|
-| OHID Fingertips | GP-recorded prevalence, dementia diagnosis rate, social contact | Varies by indicator | Borough | Open Government Licence |
-| Census 2021 (Nomis) | Age, older people living alone | 2021 | LSOA | Open Government Licence |
+|----------|----------------|--------|--------|--------|
+| [OHID Fingertips](https://fingertips.phe.org.uk/) | Share of GP patients with eight conditions; dementia diagnosis rate; social contact among care users aged 65+ | Varies by indicator; see the Table tab on Who is at risk | Borough | OGL |
+| Census 2021, via [Nomis](https://www.nomisweb.co.uk/) | Residents by age (TS007A); people aged 66+ living alone (TS003) | March 2021 | LSOA and borough | OGL |
+| Landsat 8 and 9, via Google Earth Engine | Land surface temperature | Six clear mornings, June–August 2026 | 100 m pixels, averaged to LSOA | Public domain |
+| [English Indices of Deprivation 2025](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025) | Deprivation score and decile | 2025 release | LSOA | OGL |
+| [GLA Climate Risk Mapping](https://data.london.gov.uk/dataset/climate-risk-mapping-2oxg6) | Tree canopy cover | 2013 | 2011 LSOA, moved to 2021 | OGL |
+| [HadUK-Grid v1.3.2](https://catalogue.ceda.ac.uk/uuid/789b3065d74a4c948ab05d33556c86d0/), Met Office | Days above 25°C each year | 1931–2025 | 1 km grid, averaged over Hackney | OGL |
+| [CQC care directory](https://www.cqc.org.uk/about-us/transparency/using-cqc-data) | Care home names and postcodes, located with [postcodes.io](https://postcodes.io/) | 28 October 2026 | Postcode | OGL |
+| [GLA Cool Space Data 2025](https://data.london.gov.uk/dataset/cool-space-data-2025-2z19p) | Indoor cool spaces: names, opening hours, locations | 2025 | Point | None stated |
+| [House of Commons Library MSOA Names](https://houseofcommonslibrary.github.io/msoanames) | Readable neighbourhood names for map labels | Version 2.3, 2026 | MSOA | Open Parliament Licence |
+| ONS LSOA boundaries (December 2021, BFE V10) | Neighbourhood outlines for the maps, and for averaging temperature, tree cover and hot days | 2021 | LSOA | OGL |
 
-Remaining rows from the plan's data sources table go here.
+Neighbourhoods are 2021 Lower Layer Super Output Areas (LSOAs), small areas of 1,000 to 3,000 residents; Hackney has `r nrow(overlap$lsoa)`. OGL is the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+
+**Evidence.** The risk factors come from studies of England and London, not from Hackney's own data: age and care homes from [UKHSA's heat mortality monitoring](https://www.gov.uk/government/statistics/heat-mortality-monitoring-report-england-2025/heat-mortality-monitoring-report-england-2025) and [LSHTM (2026)](https://www.lshtm.ac.uk/newsevents/news/2026/health-care-home-residents-impacted-heatwaves), health conditions from [Thompson et al. (2024)](https://pmc.ncbi.nlm.nih.gov/articles/PMC11812907), and living alone and deprivation from [Thompson et al. (2025)](https://pmc.ncbi.nlm.nih.gov/articles/PMC12315017/) and [Murage et al. (2020)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7103759).
+
+**Attribution.** Contains public sector information licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right [year]. Contains Royal Mail data © Royal Mail copyright and database right [year]. Care home information from the Care Quality Commission. Contains Parliamentary information licensed under the Open Parliament Licence v3.0. Landsat data courtesy of the U.S. Geological Survey. HadUK-Grid: Met Office; Hollis, D.; Carlisle, E.; Kendon, M.; Packman, S.; Doherty, A. (2026): HadUK-Grid Gridded Climate Observations on a 1km grid over the UK, v1.3.2.ceda (1836-2025). NERC EDS Centre for Environmental Data Analysis. [doi:10.5285/789b3065d74a4c948ab05d33556c86d0](https://doi.org/10.5285/789b3065d74a4c948ab05d33556c86d0).
 :::
 
+
 ::: {.card title="Methods"}
-**Confidence intervals.** What the 95% interval means, in two or three sentences.
+**Who is at risk**
 
-**Funnel plots and overdispersion.** How the limits are drawn, why they're widened, and why only two indicators get a funnel.
+**Indicators.** Values, 95% intervals, England comparisons and recent trends all come from Fingertips and aren't recalculated here. The Latest tab uses the most recent period with a Hackney value, so Hackney, London and England always share a period. The dementia diagnosis rate's interval reflects uncertainty in the estimated number of people living with dementia, so it is wide even for England.
 
-**Crude rates.** Why GP prevalence isn't age-standardised, and what that means in a young borough.
+**Borough comparison.** Funnel plots were tested and dropped. London boroughs differ far more than chance would produce, so once the limits are widened to allow for that (Spiegelhalter 2005), they become flat bands. The diagnosis rate chart shows that band directly: the London average ± 1.96 times the between-borough standard deviation.
 
-**Surface temperature.** Which Landsat summer was used, how it's averaged to LSOAs, and that it measures surfaces rather than air.
+**Data source.** DHSC is replacing Fingertips with Find public health data during 2026/27. This dashboard uses Fingertips, which was still the live source when the data were downloaded.
 
-**Bivariate bands.** How the three bands are drawn across Hackney's LSOAs.
+**Where it's hot and where they overlap**
 
-**Change of data source.** Fingertips is being replaced by Find public health data; which one this dashboard uses.
+**Surface temperature.** Landsat 8 and 9 surface temperature for June to August 2026, with cloud and cloud shadow masked. Only the six scenes at least 99% clear over Hackney are used, so every pixel's median comes from the same days. Each neighbourhood's value is the average of its pixels.
+
+**Tree cover.** The GLA's canopy layer uses 2011 neighbourhood boundaries, so each 2021 neighbourhood takes the area-weighted average of the 2011 areas it overlaps.
+
+**Hot days.** HadUK-Grid estimates daily maximum temperatures on a 1 km grid from weather station readings. Hackney's yearly count is the average over the grid cells it touches, each weighted by how much of the cell falls inside Hackney.
+
+**Census counts.** Census 2021 adds small amounts of noise to protect privacy, so Hackney's neighbourhood counts add up to 8,035 residents aged 75+, four more than the borough figure of 8,031. The dashboard uses the neighbourhood total wherever it counts residents.
 :::
 
 ::: {.card title="Limitations"}
 **Who is at risk**
 
-- **Crude rates.** One sentence.
-- **GP registers count diagnoses.** One sentence.
-- **Evidence comes from elsewhere.** One sentence.
+- **Crude rates.** GP-recorded prevalence isn't age-standardised, so comparisons with London and England partly reflect Hackney's young population.
+- **GP registers count diagnoses.** Low recorded prevalence can mean under-diagnosis as well as less illness.
+- **GP practice, not residence.** Borough figures count patients of Hackney GP practices, wherever they live.
+- **Evidence comes from elsewhere.** Risk factors are taken from national and London studies, not estimated in Hackney.
 
 **Where it's hot and where they overlap**
 
-- **Surface, not air, temperature.** One sentence.
-- **Old tree cover data.** One sentence.
-- **Bands are relative to Hackney.** One sentence.
-- **Care homes in Census counts.** One sentence.
-- **Ecological fallacy.** One sentence.
+- **Surface, not air, temperature.** Landsat measures how hot surfaces get on clear late mornings, not the air people feel at the afternoon peak.
+- **Old tree cover data.** The canopy layer is from 2013, 13 years before the temperature data.
+- **Hot days are estimates.** They are interpolated from weather stations, and the network was thinner in early decades, so the earliest years are the least certain.
+- **Bands are relative to Hackney.** "Hot" on the overlap map means hot for Hackney, not for London.
+- **Care homes in Census counts.** Care home residents are counted where they live, which raises the share aged 75+ in neighbourhoods with a home; the map's labels flag them.
+- **Ecological fallacy.** A hot neighbourhood with many older residents doesn't show that those residents are the ones exposed.
 
 **What's missing**
 
-- **No indoor overheating data.** One sentence.
-- **No local heat death figures.** One sentence.
+- **No indoor overheating data.** No dataset shows how hot homes get, although much heat exposure happens indoors and depends on the building.
+- **No local heat death figures.** UKHSA reports heat deaths only for London as a whole, because borough counts are too small to estimate reliably.
 :::
 
-## Row {height="15%"}
+## Row 
 
 ::: {.card}
 Code and data: [GitHub repo](https://github.com/). Write-up: [link](https://github.com/).
